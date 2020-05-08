@@ -29,7 +29,7 @@ type feedbackResult struct {
 
 var vehicleResult map[string]feedbackResult
 
-var inventory vehicle
+var inventory []vehicle
 
 // Values array for the feedback.json file
 type Values struct {
