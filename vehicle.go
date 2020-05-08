@@ -29,17 +29,6 @@ type bike struct {
 	make  string
 }
 
-type feedbackResult struct {
-	feedbackTotal    int
-	feedbackPositive int
-	feedbackNegative int
-	feedbackNeutral  int
-}
-
-var vehicleResult map[string]feedbackResult
-
-var inventory []vehicle
-
 // Values array for the feedback.json file
 type Values struct {
 	Models []Model `json:"values"`
@@ -50,6 +39,17 @@ type Model struct {
 	Name     string   `json:"model"`
 	Feedback []string `json:"feedback"`
 }
+
+type feedbackResult struct {
+	feedbackTotal    int
+	feedbackPositive int
+	feedbackNegative int
+	feedbackNeutral  int
+}
+
+var vehicleResult map[string]feedbackResult
+
+var inventory []vehicle
 
 type rating float32
 
@@ -62,6 +62,7 @@ const (
 )
 
 func init() {
+
 	inventory = []vehicle{
 		bike{"FTR 1200", "Indian"},
 		bike{"Iron 1200", "Harley"},
@@ -76,6 +77,7 @@ func init() {
 		truck{"RAM1500", "Dodge", "Truck"}}
 
 	vehicleResult = make(map[string]feedbackResult)
+
 }
 
 func main() {
@@ -83,6 +85,7 @@ func main() {
 	// Generate ratings for the different vehicles
 	generateRating()
 	// Print ratings for the different vehicles
+
 	for _, veh := range inventory {
 		switch v := veh.(type) {
 		case car:
@@ -95,9 +98,11 @@ func main() {
 			fmt.Printf("Are you sure this Vehicle Type exists")
 		}
 	}
+
 }
 
 func readJSONFile() Values {
+
 	jsonFile, err := os.Open("feedback.json")
 
 	if err != nil {
@@ -114,11 +119,14 @@ func readJSONFile() Values {
 }
 
 func generateRating() {
+
 	f := readJSONFile()
+
 	for _, v := range f.Models {
 		var vehResult feedbackResult
 		var vehRating rating
 		for _, msg := range v.Feedback {
+
 			if text := strings.Split(msg, " "); len(text) >= 5 {
 				vehRating = 5.0
 				vehResult.feedbackTotal++
@@ -133,6 +141,7 @@ func generateRating() {
 					case "pathetic", "bad", "worse", "unfortunately", "agitated", "frustrated":
 						vehRating += extraNegative
 					}
+
 				}
 				switch {
 				case vehRating > 8.0:
@@ -146,25 +155,21 @@ func generateRating() {
 		}
 		vehicleResult[v.Name] = vehResult
 	}
+
 }
 
 func showRating(model string) {
 	ratingFound := false
 	for m, r := range vehicleResult {
 		if m == model {
-			fmt.Printf(""+
-				"Total Ratings:%v\tPositive:%v\tNegative:%v\tNeutral:%v",
-				r.feedbackTotal,
-				r.feedbackPositive,
-				r.feedbackNegative,
-				r.feedbackNeutral,
-			)
+			fmt.Printf("Total Ratings:%v\tPositive:%v\tNegative:%v\tNeutral:%v", r.feedbackTotal, r.feedbackPositive, r.feedbackNegative, r.feedbackNeutral)
 			ratingFound = true
 		}
-		if !ratingFound {
-			fmt.Printf("No rating for this vehicle")
-		}
 	}
+	if !ratingFound {
+		fmt.Printf("No rating for this vehicle")
+	}
+
 }
 
 func (c *car) carDetails() {
